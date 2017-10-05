@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaRestClient", "KafkaRestClient\KafkaRestClient.csproj", "{485C3D5D-CC8B-4F76-8342-F9EBF7D6C188}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaRestClient.UnitTests", "KafkaRestClient.UnitTests\KafkaRestClient.UnitTests.csproj", "{00301837-E4C6-4EA6-9540-B3222B635370}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaRestClient.IntegrationTests", "KafkaRestClient.IntegrationTests\KafkaRestClient.IntegrationTests.csproj", "{4D47CC60-11D6-414A-AE07-08E6DFEE720C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{485C3D5D-CC8B-4F76-8342-F9EBF7D6C188}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{485C3D5D-CC8B-4F76-8342-F9EBF7D6C188}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{485C3D5D-CC8B-4F76-8342-F9EBF7D6C188}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{485C3D5D-CC8B-4F76-8342-F9EBF7D6C188}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00301837-E4C6-4EA6-9540-B3222B635370}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00301837-E4C6-4EA6-9540-B3222B635370}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00301837-E4C6-4EA6-9540-B3222B635370}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00301837-E4C6-4EA6-9540-B3222B635370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D47CC60-11D6-414A-AE07-08E6DFEE720C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D47CC60-11D6-414A-AE07-08E6DFEE720C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D47CC60-11D6-414A-AE07-08E6DFEE720C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D47CC60-11D6-414A-AE07-08E6DFEE720C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
