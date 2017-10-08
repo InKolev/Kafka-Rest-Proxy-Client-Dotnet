@@ -20,5 +20,11 @@ namespace KafkaRestClient.Models
             this.Topic = typeof(TTopic).Name;
             return this;
         }
+
+        public PostSingleRecordRequest<TRecord> WithDestination(string topic)
+        {
+            this.Topic = topic;
+            return this;
+        }
     }
 }

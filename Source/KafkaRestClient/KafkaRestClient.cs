@@ -14,18 +14,18 @@ namespace KafkaRestClient
         private readonly IRestClient _restClient;
         private readonly ISerializer _serializer;
         private readonly string _kafkaRestProxyUrl;
-        private readonly string _defaultRequestContentType;
+        private readonly string _requestContentType;
 
         public KafkaRestClient(
             IRestClient restClient,
             ISerializer serializer,
             string kafkaRestProxyUrl,
-            string defaultRequestContentType)
+            string requestContentType)
         {
             _restClient = restClient;
             _serializer = serializer;
             _kafkaRestProxyUrl = kafkaRestProxyUrl;
-            _defaultRequestContentType = defaultRequestContentType;
+            _requestContentType = requestContentType;
         }
 
         public Task<HttpResponseMessage> PostSingleRecordAsync<TRecord>(
@@ -33,19 +33,23 @@ namespace KafkaRestClient
             where TRecord : IGetPartitionKey
         {
             if (request == null)
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(
+                    $"Argument \"{nameof(request)}\" must not be null.");
 
             if (request.Record == null)
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(
+                    $"Argument \"{nameof(request)}.{nameof(request.Record)}\" must not be null.");
 
             if (string.IsNullOrWhiteSpace(request.Topic))
-                throw new ArgumentException();
+                throw new ArgumentException(
+                    $"Argument \"{nameof(request)}.{nameof(request.Topic)}\" must not be null, empty or whitespace.");
 
             Uri destinationUri;
             var destinationUriString = $@"{_kafkaRestProxyUrl}/topics/{request.Topic}";
             if (!IsValidUri(destinationUriString, out destinationUri))
             {
-                throw new ArgumentException();
+                throw new ArgumentException(
+                    $"Argument \"{nameof(destinationUriString)}\" with value \"{destinationUriString}\" does not represent a valid URI.");
             }
 
             var requestContent = CreateMessageWithSingleRecord(request.Record);
@@ -55,7 +59,7 @@ namespace KafkaRestClient
                 Content = new StringContent(
                     requestContentSerialized,
                     Encoding.UTF8,
-                    _defaultRequestContentType)
+                    _requestContentType)
             };
 
             return _restClient.SendAsync(httpRequest);
@@ -66,22 +70,27 @@ namespace KafkaRestClient
             where TRecord : IGetPartitionKey
         {
             if (request == null)
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(
+                    $"Argument \"{nameof(request)}\" must not be null.");
 
             if (request.Records == null)
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(
+                    $"Argument \"{nameof(request)}.{nameof(request.Records)}\" must not be null.");
 
             if (request.Records.Any(record => record == null))
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(
+                    $"Argument \"{nameof(request)}.{nameof(request.Records)}\" must not contain null records.");
 
             if (string.IsNullOrWhiteSpace(request.Topic))
-                throw new ArgumentException();
+                throw new ArgumentException(
+                    $"Argument \"{nameof(request)}.{nameof(request.Topic)}\" must not be null, empty or whitespace.");
 
             Uri destinationUri;
             var destinationUriString = $@"{_kafkaRestProxyUrl}/topics/{request.Topic}";
             if (!IsValidUri(destinationUriString, out destinationUri))
             {
-                throw new ArgumentException($"Parameter {nameof(destinationUriString)} does not represent a valid URI.");
+                throw new ArgumentException(
+                    $"Argument \"{nameof(destinationUriString)}\" with value \"{destinationUriString}\" does not represent a valid URI.");
             }
 
             var requestContent = CreateMessageWithMultipleRecords(request.Records);
@@ -91,7 +100,7 @@ namespace KafkaRestClient
                 Content = new StringContent(
                     requestContentSerialized,
                     Encoding.UTF8,
-                    _defaultRequestContentType)
+                    _requestContentType)
             };
 
             return _restClient.SendAsync(httpRequest);
@@ -114,6 +123,11 @@ namespace KafkaRestClient
         private bool IsValidUri(string uri, out Uri destinationUri)
         {
             return Uri.TryCreate(uri, UriKind.Absolute, out destinationUri);
+        }
+
+        public void Dispose()
+        {
+            _restClient?.Dispose();
         }
     }
 }

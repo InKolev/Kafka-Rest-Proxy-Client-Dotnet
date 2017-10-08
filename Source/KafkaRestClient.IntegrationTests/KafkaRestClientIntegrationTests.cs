@@ -1,38 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using KafkaRestClient.Interfaces;
 using KafkaRestClient.Models;
-using Moq;
 using NUnit.Framework;
 
-namespace KafkaRestClient.UnitTests
+namespace KafkaRestClient.IntegrationTests
 {
     [TestFixture]
-    public class KafkaRestClientTests
+    public class KafkaRestClientIntegrationTests
     {
         private IKafkaRestClient _client;
 
-        private Mock<IRestClient> _restClientMock;
+        private IRestClient _restClient;
 
-        private Mock<ISerializer> _serializerMock;
+        private ISerializer _serializer;
 
         [SetUp]
         public void SetUp()
         {
-            _restClientMock = new Mock<IRestClient>();
-            _serializerMock = new Mock<ISerializer>();
+            _restClient = new RestClient();
+            _serializer = new JsonSerializer();
 
-            _serializerMock.Setup(x => x.Serialize(It.IsAny<object>()))
-                .Returns(Guid.NewGuid().ToString());    
-                
+            //"PLAINTEXT://35.189.203.232:9092", "PLAINTEXT://35.187.15.9:9092", "PLAINTEXT://104.199.88.226:9092"
+            // Load all strings and nums from config
             _client = new KafkaRestClient(
-                _restClientMock.Object,
-                _serializerMock.Object,
-                "http://kafkarestproxy:8082",
+                _restClient,
+                _serializer,
+                "http://35.189.203.232:8082",
                 "application/vnd.kafka.json.v1+json");
         }
+
         [Test]
         public async Task PostSingleRecord()
         {
@@ -43,6 +40,9 @@ namespace KafkaRestClient.UnitTests
                 .WithRecord(record);
 
             var response = await _client.PostSingleRecordAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            StringAssert.Contains("offsets", response.Content.ReadAsStringAsync().Result);
         }
 
         [Test]
@@ -60,14 +60,9 @@ namespace KafkaRestClient.UnitTests
                 .WithDestination<RaidBossesTopic>();
 
             var response = await _client.PostMultipleRecordsAsync(request);
+            response.EnsureSuccessStatusCode();
 
-            _restClientMock.Verify(
-                x => x.SendAsync(It.IsAny<HttpRequestMessage>()), 
-                Times.Once());
-
-            _serializerMock.Verify(
-                x => x.Serialize(It.IsAny<object>()), 
-                Times.Once());
+            StringAssert.Contains("offsets", response.Content.ReadAsStringAsync().Result);
         }
     }
 

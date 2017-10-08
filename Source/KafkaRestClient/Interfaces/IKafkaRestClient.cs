@@ -1,10 +1,11 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using KafkaRestClient.Models;
 
 namespace KafkaRestClient.Interfaces
 {
-    public interface IKafkaRestClient
+    public interface IKafkaRestClient : IDisposable
     {
         Task<HttpResponseMessage> PostSingleRecordAsync<TRecord>(PostSingleRecordRequest<TRecord> request)
             where TRecord : IGetPartitionKey;

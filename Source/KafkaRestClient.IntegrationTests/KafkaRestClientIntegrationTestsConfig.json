@@ -1,0 +1,4 @@
+﻿{
+  "KafkaRestProxyUrl": "http://104.199.88.226:8082",
+  "RequestContentType": "application/vnd.kafka.json.v1+json"
+}
