@@ -160,9 +160,9 @@ namespace KafkaRestClient.UnitTests
                 Times.Never());
         }
 
-        [TestCase(null)]
-        [TestCase("")]
-        [TestCase("     ")]
+        [TestCase(null)] // Null string
+        [TestCase("")] // Empty string
+        [TestCase("     ")] // Whitespaces string
         public void PostSingleRecordAsync_DestinationIsNullEmptyOrWhitespace_ThrowsArgumentException(string destination)
         {
             // Arrange
@@ -191,8 +191,147 @@ namespace KafkaRestClient.UnitTests
                 Times.Never());
         }
 
+        [TestCase(HttpStatusCode.OK)]
+        [TestCase(HttpStatusCode.NoContent)]
+        public void PostlMultipleRecordsAsync_ValidRequestAndHttpResponseIndicatesSuccess_DoesNotThrowException(
+            HttpStatusCode responseStatusCode)
+        {
+            // Arrange
+            var record = new Mob
+            {
+                Name = "Scarlet van Halisha",
+                MobType = MobType.RaidBoss
+            };
+
+            var request = new PostSingleRecordRequest<Mob>()
+                .WithDestination<MobsTopic>()
+                .WithRecord(record);
+
+            _restClientMock
+                .Setup(x => x.SendAsync(It.IsAny<HttpRequestMessage>()))
+                .Returns(Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
+
+            _serializerMock
+                .Setup(x => x.Serialize(It.IsAny<object>()))
+                .Returns(JsonConvert.SerializeObject(request));
+
+            // Act & Assert
+            Assert.DoesNotThrowAsync(
+                async () =>
+                {
+                    var response = await _client.PostSingleRecordAsync(request);
+                    response.EnsureSuccessStatusCode();
+                });
+
+            _restClientMock.Verify(
+                x => x.SendAsync(It.IsAny<HttpRequestMessage>()),
+                Times.Once());
+
+            _serializerMock.Verify(
+                x => x.Serialize(It.IsAny<object>()),
+                Times.Once());
+        }
+
+        [TestCase(HttpStatusCode.Forbidden)]
+        [TestCase(HttpStatusCode.BadRequest)]
+        [TestCase(HttpStatusCode.BadGateway)]
+        [TestCase(HttpStatusCode.GatewayTimeout)]
+        [TestCase(HttpStatusCode.InternalServerError)]
+        public void PostlMultipleRecordsAsync_ValidRequestButHttpResponseIndicatesFailure_ThrowsHttpRequestException(
+            HttpStatusCode responseStatusCode)
+        {
+            // Arrange
+            var record = new Mob
+            {
+                Name = "Scarlet van Halisha",
+                MobType = MobType.RaidBoss
+            };
+
+            var request = new PostSingleRecordRequest<Mob>()
+                .WithDestination<MobsTopic>()
+                .WithRecord(record);
+
+            _restClientMock
+                .Setup(x => x.SendAsync(It.IsAny<HttpRequestMessage>()))
+                .Returns(Task.FromResult(new HttpResponseMessage(responseStatusCode)));
+
+            _serializerMock
+                .Setup(x => x.Serialize(It.IsAny<object>()))
+                .Returns(JsonConvert.SerializeObject(request));
+
+            // Act & Assert
+            Assert.ThrowsAsync<HttpRequestException>(
+                async () =>
+                {
+                    var response = await _client.PostSingleRecordAsync(request);
+                    response.EnsureSuccessStatusCode();
+                });
+
+            _restClientMock.Verify(
+                x => x.SendAsync(It.IsAny<HttpRequestMessage>()),
+                Times.Once());
+
+            _serializerMock.Verify(
+                x => x.Serialize(It.IsAny<object>()),
+                Times.Once());
+        }
+
         [Test]
-        public async Task PostMultipleRecords()
+        public void PostlMultipleRecordsAsync_RecordIsNull_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var request = new PostSingleRecordRequest<Mob>()
+                .WithDestination<MobsTopic>()
+                .WithRecord(null);
+
+            // Act & Assert
+            var exc = Assert.ThrowsAsync<ArgumentNullException>(
+                async () => await _client.PostSingleRecordAsync(request));
+
+            StringAssert.Contains(nameof(request.Record), exc.Message);
+
+            _restClientMock.Verify(
+                x => x.SendAsync(It.IsAny<HttpRequestMessage>()),
+                Times.Never());
+
+            _serializerMock.Verify(
+                x => x.Serialize(It.IsAny<object>()),
+                Times.Never());
+        }
+
+        [TestCase(null)] // Null string
+        [TestCase("")] // Empty string
+        [TestCase("     ")] // Whitespaces string
+        public void PostlMultipleRecordsAsync_DestinationIsNullEmptyOrWhitespace_ThrowsArgumentException(string destination)
+        {
+            // Arrange
+            var record = new Mob
+            {
+                MobType = MobType.Monster,
+                Name = "Lidia von Hellman"
+            };
+
+            var request = new PostSingleRecordRequest<Mob>()
+                .WithDestination(destination)
+                .WithRecord(record);
+
+            // Act & Assert
+            var exc = Assert.ThrowsAsync<ArgumentException>(
+                async () => await _client.PostSingleRecordAsync(request));
+
+            StringAssert.Contains(nameof(request.Topic), exc.Message);
+
+            _restClientMock.Verify(
+                x => x.SendAsync(It.IsAny<HttpRequestMessage>()),
+                Times.Never());
+
+            _serializerMock.Verify(
+                x => x.Serialize(It.IsAny<object>()),
+                Times.Never());
+        }
+
+        [Test]
+        public async Task PostlMultipleRecords()
         {
             var records = new List<Mob>
             {
