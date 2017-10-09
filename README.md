@@ -35,8 +35,8 @@ var monster = new Monster { Name = "Scarlet van Halisha", MonsterType = MonsterT
 
 // Create a request that contains the record and the target topic.
 var request = new PostSingleRecordRequest<Monster>()
-    .WithRecord(monster)
-    .WithDestination<MonstersTopic>();
+    .WithDestination<MonstersTopic>()
+    .WithRecord(monster);
 
 // Send publish request to Kafka Rest Proxy.
 HttpResponseMessage response = await client.PostSingleRecordAsync(request);
@@ -54,8 +54,8 @@ var monsters = new List<Monster>
 
 // Create a request that contains all the records and the target topic.
 var request = new PostMultipleRecordsRequest<Monster>()
-    .WithRecords(monsters)
-    .WithDestination<MonstersTopic>();
+    .WithDestination<MonstersTopic>()
+    .WithRecords(monsters);
 
 // Send publish request to Kafka Rest Proxy.
 HttpResponseMessage response = await client.PostMultipleRecordsAsync(request);
