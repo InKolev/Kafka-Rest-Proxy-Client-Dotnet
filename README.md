@@ -5,11 +5,19 @@ Simple .NET client for easy access to Kafka Rest Proxy.
 
 ## Initialize client
 ```cs
-var restClient = new RestClient();
-var serializer = new JsonSerializer();
+// Wrapper over the standard .NET HttpClient, addressing some of the issues of the native client.
+IRestClient restClient = new RestClient();
+
+// Wrapper over Newtonsoft's JsonConvert class
+ISerializer serializer = new JsonSerializer();
+
+// Specify the URL from which Kafka Rest Proxy is accessible.
 var kafkaRestProxyUrl = "http://36.189.204.236:8082";
+
+// Specify the supported request content type for publishing messages to Kafka Rest Proxy. (it might be different for different versions of Kafka Rest Proxy)
 var kafkaRestProxyRequestContentType = "application/vnd.kafka.json.v1+json";
 
+// Initialize the client.
 var client = new KafkaRestClient(
     restClient,
     serializer,
@@ -59,7 +67,7 @@ public class MonstersTopic : ITopic { }
 
 ## Record with key
 ```cs
-// In order To define a partition key for the record which will be published to Kafka,
+// In order to define a partition key for the record which will be published to Kafka,
 // your class should implement "IGetPartitionKey" interface and provide implementation for the GetPartitionKey() method.
 public class Monster : IGetPartitionKey
 {
