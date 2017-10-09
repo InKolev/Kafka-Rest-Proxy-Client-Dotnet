@@ -11,16 +11,17 @@ you can reach **average publish speed around 2-3 ms per single message** (tested
 
 ## Initialize client
 ```cs
-// Wrapper over the standard .NET HttpClient, addressing some of the issues of the native client.
+// Wrapper over the standard .NET HttpClient, addressing some of the issues of the client.
 IRestClient restClient = new RestClient();
 
-// Wrapper over Newtonsoft's JsonConvert class
+// Wrapper over Newtonsoft.Json.JsonConvert class.
 ISerializer serializer = new JsonSerializer();
 
 // Specify the URL from which Kafka Rest Proxy is accessible.
 var kafkaRestProxyUrl = "http://36.189.204.236:8082";
 
-// Specify the supported request content type for publishing messages to Kafka Rest Proxy. (it might be different for different versions of Kafka Rest Proxy)
+// Specify the supported request content type for publishing messages to Kafka Rest Proxy.
+// (it might be different for different versions of Kafka Rest Proxy)
 var kafkaRestProxyRequestContentType = "application/vnd.kafka.json.v1+json";
 
 // Initialize the client.
