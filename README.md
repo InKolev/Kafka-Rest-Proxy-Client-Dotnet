@@ -1,7 +1,10 @@
 # Kafka-Rest-Proxy-Client-Dotnet
-Simple .NET client for easy access to Kafka Rest Proxy.
+Simple .NET client for easy access to Kafka Rest Proxy.  
 
-# Examples
+Currently supports only fast *publish* of messages.  
+The speed of each publish is pretty much network bound (also varies depending on the size of the message).  
+If the Kafka Rest Proxy is set up in the same data center as the client application, you can reach average publish speed around 2-3 ms per single message (tested with messages of size between 1 and 5kbs).
+# Example usage
 
 ## Initialize client
 ```cs
