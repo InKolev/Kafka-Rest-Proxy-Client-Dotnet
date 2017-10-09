@@ -68,7 +68,7 @@ HttpResponseMessage response = await client.PostMultipleRecordsAsync(request);
 public class MonstersTopic : ITopic { }
 ```
 
-## Record with key
+## Record with partition key
 ```cs
 // In order to define a partition key for the record which will be published to Kafka,
 // your class should implement "IGetPartitionKey" interface and provide implementation for the GetPartitionKey() method.
