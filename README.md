@@ -19,17 +19,21 @@ var client = new KafkaRestClient(
 
 ## Post single record
 ```cs
+// Create a single record that will be published to Kafka.
 var monster = new Monster { Name = "Scarlet van Halisha", MonsterType = MonsterType.RaidBoss };
 
+// Create a request that contains the record and the target topic.
 var request = new PostSingleRecordRequest<Monster>()
     .WithRecord(monster)
     .WithDestination<MonstersTopic>();
 
+// Send publish request to Kafka Rest Proxy.
 HttpResponseMessage response = await client.PostSingleRecordAsync(request);
 ```
 
 ## Post multiple records
 ```cs
+// Create a list of records that will be published to Kafka.
 var monsters = new List<Monster>
 {
     new Monster { Name = "Scarlet van Halisha", MonsterType = MonsterType.RaidBoss },
@@ -37,20 +41,26 @@ var monsters = new List<Monster>
     new Monster { Name = "Queen Ant", MonsterType = MonsterType.Minion }
 };
 
+// Create a request that contains all the records and the target topic.
 var request = new PostMultipleRecordsRequest<Monster>()
     .WithRecords(monsters)
     .WithDestination<MonstersTopic>();
 
+// Send publish request to Kafka Rest Proxy.
 HttpResponseMessage response = await client.PostMultipleRecordsAsync(request);
 ```
 
 ## Topic
 ```cs
+// If you want to use strongly typed topics, as shown in the examples above,
+// you should create an empty class which implements the "ITopic" interface.
 public class MonstersTopic : ITopic { }
 ```
 
 ## Record with key
 ```cs
+// In order To define a partition key for the record which will be published to Kafka,
+// your class should implement "IGetPartitionKey" interface and provide implementation for the GetPartitionKey() method.
 public class Monster : IGetPartitionKey
 {
    public string Name { get; set; }
@@ -61,12 +71,5 @@ public class Monster : IGetPartitionKey
    {
        return MonsterType.ToString();
    }
-}
-
-public enum MonsterType
-{
-   Minion,
-   Monster,
-   RaidBoss
 }
 ```
